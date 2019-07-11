@@ -261,6 +261,9 @@ public final class CollapsingTextHelper {
   }
 
   public void setExpandedTextGravity(int gravity) {
+    if ((gravity & GravityCompat.RELATIVE_HORIZONTAL_GRAVITY_MASK) == 0) {
+      gravity |= GravityCompat.START;
+    }
     if (expandedTextGravity != gravity) {
       expandedTextGravity = gravity;
       recalculate();
@@ -272,6 +275,9 @@ public final class CollapsingTextHelper {
   }
 
   public void setCollapsedTextGravity(int gravity) {
+    if ((gravity & GravityCompat.RELATIVE_HORIZONTAL_GRAVITY_MASK) == 0) {
+      gravity |= GravityCompat.START;
+    }
     if (collapsedTextGravity != gravity) {
       collapsedTextGravity = gravity;
       recalculate();
