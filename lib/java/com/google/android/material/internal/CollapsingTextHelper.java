@@ -89,6 +89,7 @@ public final class CollapsingTextHelper {
   private float collapsedDrawX;
   private float currentDrawX;
   private float currentDrawY;
+  private float collapsedTextWidth;
   private Typeface collapsedTypeface;
   private Typeface expandedTypeface;
   private Typeface currentTypeface;
@@ -540,6 +541,7 @@ public final class CollapsingTextHelper {
     textToDrawCollapsed = textToDraw;
     float width = textToDrawCollapsed != null ?
         textPaint.measureText(textToDrawCollapsed, 0, textToDrawCollapsed.length()) : 0;
+    collapsedTextWidth = width;
     final int collapsedAbsGravity =
         GravityCompat.getAbsoluteGravity(
             collapsedTextGravity,
@@ -655,8 +657,16 @@ public final class CollapsingTextHelper {
       }
 
       // Compute where to draw textLayout for this frame
-      final float currentExpandedX =
-          currentDrawX + textLayout.getLineLeft(0) - expandedFirstLineDrawX * 2;
+      final float currentExpandedX;
+      final float currentCollapsedX;
+      if (isRtl) {
+        currentExpandedX = x + textLayout.getLineLeft(0) - expandedFirstLineDrawX * 2 +
+            currentBounds.width() - textLayout.getWidth() * scale;
+        currentCollapsedX = x; //+ currentBounds.width() - collapsedTextWidth * scale;
+      } else {
+        currentExpandedX = x + textLayout.getLineLeft(0) - expandedFirstLineDrawX * 2;
+        currentCollapsedX = x;
+      }
       if (drawTexture) {
         // If we should use a texture, draw it instead of text
         // Expanded text
@@ -676,7 +686,7 @@ public final class CollapsingTextHelper {
         textLayout.draw(canvas);
 
         // position the overlays
-        canvas.translate(x - currentExpandedX, 0);
+        canvas.translate(currentCollapsedX - currentExpandedX, 0);
 
         // Collapsed text
         textPaint.setAlpha((int) (collapsedTextBlend * 255));
